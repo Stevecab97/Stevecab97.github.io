@@ -1,0 +1,98 @@
+//Title: Cipher.cpp
+//Author: Steve Cabral Tchounkeu Nana
+//E-mail: Steve20@umbc.edu
+//section: 17
+//Date: 10/27/2017
+//Description: This program makes the intruction for the Cipher.h file
+
+#include "Cipher.h"
+
+// Name: Cipher(char) - Overloaded constructor for Caesar cipher            
+// Preconditions - Caesar cipher is defined                                 
+// Postconditions - Constructor for the Caesar cipher (sets m_mode to CAESAR)  
+Cipher::Cipher(char caesarKey){
+  m_mode = CAESAR;
+  m_caesar_key = caesarKey;
+}
+
+// Name: Cipher(string) - Overloaded constructor for Vigenere cipher        
+// Preconditions - Vigenere cipher is defined                               
+// Postconditions - Constructor for the Vigenere cipher (sets m_mode to VIGENERE)                                                                          
+Cipher::Cipher(string vigenereKey){
+  m_mode = VIGENERE;
+  m_vig_key = vigenereKey;
+}
+
+// Name: Cipher() - Overloaded constructor for Vigenere cipher              
+// Preconditions - Ong Cipher is defined                                    
+// Postconditions - Constructor for the Ong cipher (sets m_mode to ONG)     
+Cipher::Cipher(){
+  m_mode = ONG;
+}
+
+Cipher::~Cipher(){
+//  delete m_cipherString;
+}
+// Name: setPlainText                                                       
+// Preconditions - File with text is available (in current directory)       
+// Postconditions - Stores file text in m_cipherString                      
+void Cipher::setPlainText(string text){
+  m_cipherString = new CipherString;
+  m_cipherString->loadMessage(text.c_str());
+}
+
+// Name: encrypt                                                            
+// Preconditions - m_cipherString populated                                 
+// Postconditions - Calls correct encryption function based on the cipher chosen                                                                           
+void Cipher::encrypt(){
+  //  int caesarKey = int(m_caesar_key);
+  switch(m_mode){
+  case CAESAR:
+    m_cipherString->encryptCaesar(m_caesar_key);
+    cout << *m_cipherString << endl;
+    break;
+  case VIGENERE:
+    m_cipherString->encryptVigenere(m_vig_key);
+    cout << *m_cipherString << endl;
+    break;
+  case ONG:
+    m_cipherString->encryptOng();
+    cout << *m_cipherString << endl;
+    break;
+  }
+}
+
+// Name: decrypt                                                            
+// Preconditions - m_cipherString populated and encrypted                   
+// Postconditions - Calls correct decryption function based on the cipher chosen                                                                           
+void Cipher::decrypt(){
+  //  int caesarKey = int(m_caesar_key);
+  switch(m_mode){
+  case CAESAR:
+    m_cipherString->decryptCaesar(m_caesar_key);
+    cout << *m_cipherString << endl;
+    break;
+  case VIGENERE:
+    m_cipherString->decryptVigenere(m_vig_key);
+    cout << *m_cipherString << endl;
+    break;
+  case ONG:
+    m_cipherString->decryptOng();
+    cout << *m_cipherString << endl;
+    break;
+  }
+}
+
+// Name: changeKey                                                          
+// Preconditions - key exists                                               
+// Postconditions - Key is updated                                          
+void Cipher::changeKey(string key){
+  m_vig_key = key;
+}
+
+// Name: printString                                                        
+// Preconditions - m_cipherString populated                                 
+// Postconditions - Outputs the value of m_cipherString                     
+void Cipher::printString(){
+    cout << *m_cipherString << endl;
+}

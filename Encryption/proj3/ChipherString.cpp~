@@ -1,0 +1,58 @@
+// Title: CipherString.cpp
+// Author: Steve Cabral Tchounkeu Nana
+// E-mail: steve20@umbc.edu
+// Section: 17
+// Date: 10/27/2017
+// Description: This code will make the instructions that will be used by 
+//              CipherString.h
+
+#ifndef CIPHER_STRING_H
+#define CIPHER_STRING_H
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cstdlib>
+#include <iomanip>
+#include "Node.h"
+
+using namespace std;
+
+class CipherString{
+public:
+
+  // Name: CipherString - default constructor                               
+  // Preconditions - None                                                   
+  // Postconditions - Creates a new CipherString
+                                
+  CipherString::CipherString();
+
+  // Name: CipherString - overloaded constructor                               
+  // Preconditions - None                                                      
+  // Postconditions - Creates a new CipherString (using char*)                 
+  CipherSrting::CipherString(const char*);
+
+
+  // Name: ~CipherString - destructor                                          
+  // Preconditions - None                                                      
+  // Postconditions - Destroys CipherString                                    
+  CipherString::~CipherString();
+
+
+  // Name: loadMessage                                                         
+  // Preconditions - File (with text in it) is passed to function              
+  // Postconditions - Opens file and loads one character at a time into the linked list                                                                       
+  void CipherString::loadMessage(const char*);
+
+
+  // Name: addCharacter                                                        
+  // Preconditions - Linked list exists                                        
+  // Postconditions - Adds character to end of linked list                     
+  void addCharacter(char);
+
+
+  // Name: encryptOng                                                          
+  // Preconditions - Linked list exists                                        
+  // Postconditions - For each consonent, adds a node with "o", adds a node with "n"                                                                          
+  // adds a node with "g". Every "letter" is separated with a "-" and each wordis                                                                             
+  // seperated by a space.                                 
