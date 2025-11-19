@@ -1,0 +1,277 @@
+//Author: Steve Cabral Tchounkeu Nana
+//E-mail: Steve20@umbc.edu
+//Section: 17
+//Date:10/16/2017
+//Description: This program makes the instrucions of the file Game.h
+
+#include "Troop.h"
+#include "Game.h"
+#include <fstream>
+#include <ctime>
+
+using namespace std;
+
+const int MIN = 2;
+
+Game::Game(){
+  cout << "What is your name?" << endl;
+  cin >> m_name;
+
+  //gets the desired number of troops from the user and reprompts him if the
+  //number is out of range
+  cout << "How many troops would you like? (2-5)" << endl;
+  cin >> m_max;  
+  while (m_max > 5 or m_max < MIN){
+    cout << "How many troops would you like? (2-5)" << endl;
+    cin >> m_max;
+  }
+
+  LoadTroops();
+  RandomizeTeam();
+  DisplayTeams();
+  StartGame();
+}
+
+void Game::LoadTroops(){
+
+  string name;
+  int health;
+  int damage;
+  string target;
+  bool isFlying;
+ 
+  //reads fromm the file and create the m_troop vector
+  ifstream troopFile("proj2_troops.txt");
+  if (troopFile.is_open()){
+    while (troopFile >> name >> health >> damage >> target >> isFlying){
+      m_troop.push_back(Troop(name,health,damage,target,isFlying));
+    }
+  }
+
+  troopFile.close();
+
+}
+
+// Name: RandomizeTeam                                                        
+// Desc - Randomly chooses a troop and puts it on a team                      
+// Preconditions - m_troop is populated                                       
+// Postconditions - m_player and m_computer is populated                      
+void Game::RandomizeTeam(){
+
+  int random = 0;
+  srand(time(NULL));
+
+  //make the player's random team
+  for(int i = 0; i < m_max; i++){
+    random = rand() % (int) m_troop.size();
+    m_player.push_back(m_troop[random]);
+  }
+
+  //make the compter's random team
+  for(int i = 0; i < m_max; i++){
+    random = rand() % (int) m_troop.size();
+    m_computer.push_back(m_troop[random]);
+  }
+
+  cout << "Both teams have been populated" << endl;
+}
+
+// Name: StartGame()                                                          
+// Desc - Manages the game itself including win conditions continually        
+//         calling the main menu                                              
+// Preconditions - Both players have teams with troops                        
+// Postconditions - Continually checks to see if player/computer has troops   
+void Game::StartGame(){
+  
+  //checks if the player or the computer have troops left and continues
+  //running
+  while(m_player.size() != 0 and m_computer.size() != 0){
+    MainMenu();
+  }
+
+  //if the user doesn't have any troops left notify him that he lost
+  if(m_player.size() == 0 and m_computer.size != 0){
+    cout << "You Lose!" << endl;
+  }
+
+  //if the computer doesn't have any troop left notify the user that he won
+  else(m_computer.size() == 0 and m_player.size !=0);{
+      cout << "You Win!" << endl;
+  }
+  
+}
+
+// Name: DisplayTroops()                                                      
+// Desc - Displays the current teams (both user and computer)                 
+// Preconditions - Players have a team with troops                            
+// Postconditions - Displays a numbered list of troops                        
+void Game::DisplayTroops(){
+
+  
+  cout << "************************" << endl;
+  cout << m_name << "'s Team" << endl;
+
+  //displays player's troop
+  for(unsigned int i = 0; i < m_player.size(); i++){
+    cout << m_player[i].GetName() << " " << m_player[i].GetHealth() << endl;
+  }
+
+  //displays computer's troop
+  cout << "************************" << endl;
+  cout << "Computer's Team" << endl;
+
+  for(unsigned int i = 0; i < m_computer.size(); i++){
+    cout << m_computer[i].GetName() << " " << m_computer[i].GetHealth() << endl;
+  }
+
+  cout << "************************" << endl;
+
+}
+
+// Name: ChangeTroop()                                                        
+// Desc - Allows the user to change current troop                             
+// Preconditions - Players have troops and have not lost                      
+// Postconditions - Displays a numbered list of troops and m_curTroop is updated    
+void Game::ChangeTroop(){
+  m_curTroop = 0;
+  Troop initialTroop = m_player[0];
+
+  //notifies the user that he can't change troops if he has only one troop
+  if ( m_player.size() == 1 ){
+    cout << "You only have one troop" << endl;
+  } 
+
+  //gets the troop the user wants to use
+  else {
+    cout << "Which troop do you want to use?" << endl;
+    cin >> m_curTroop;
+
+    //if the number choosen is less than or greater than the vector's size 
+    //ask the user to reenter a number 
+    while ((m_curTroop  < 2) || (m_curTroop) > (int) m_player.size()){
+      cout << "Which troop do you want to use?" << endl;
+      cin >> m_curTroop;
+    }
+
+    //switch the place of the desire troop with the first
+    m_player[0] = m_player[m_curTroop-1];
+    m_player[m_curTroop-1] = initialTroop;
+    cout << "************************" << endl;
+
+  }
+}
+
+// Name: MainMenu()                                                           
+// Desc - Displays and manages menu                                           
+// Preconditions - Players have a team with troops                            
+// Postconditions - Displays a numbered list of troops                        
+void Game::MainMenu(){
+
+  int choice;
+  
+  cout << "What would you like to do?" << endl;
+  cout << "1. Display Team" << endl;
+  cout << "2. Change Current Troop" << endl;
+  cout << "3. Attack!" << endl;
+  cout << "4. Quit" << endl;
+  cin >> choice;
+
+  switch(choice){
+  case 1:
+    DisplayTeam();
+    break;
+  case 2:
+    DisplayTeam();
+    ChangeTroop();
+    break;
+  case 3:
+    Attack();
+    DisplayTeams();
+    break;
+  default:
+    cout << "Thank you for playing Clash UMBC" << endl;
+    exit(0);
+  }
+ 
+}
+
+// Name: DisplayTeams()                                                       
+// Desc - Displays the current teams (both player and computer)               
+// Preconditions - m_player/m_computer have a team with troops                
+// Postconditions - Displays a numbered list of troops                        
+void Game::DisplayTeams(){
+
+  cout << "************************" << endl;
+  cout << m_name << "'s Team" << endl;
+
+  //prints the player's troop
+  for(unsigned int i = 0; i < m_player.size(); i++){
+    cout << m_player[i].GetName() << " " << m_player[i].GetHealth() << endl;
+  }
+
+  cout << "************************" << endl;
+  cout << "Computer's Team" << endl;
+
+  for(unsigned int i = 0; i < m_computer.size(); i++){
+    cout << m_computer[i].GetName() << " " << m_computer[i].GetHealth() << endl;
+  }
+
+  cout << "************************" << endl;
+  
+}
+
+// Name: DisplayTeam()                                                        
+// Desc - Displays just player team (for changing current troop)              
+// Preconditions - Player and Computer both have troops left                  
+// Postconditions - Displays a numbered menu                                  
+void Game::DisplayTeam(){
+  cout << "************************" << endl;
+  cout << m_name << "'s Team" << endl;
+
+  for(unsigned int i = 0; i < m_player.size(); i++){
+    cout << m_player[i].GetName() << " " << m_player[i].GetHealth() << endl;
+  }
+
+  cout << "************************" << endl;
+}
+
+// Name: Attack()                                                             
+// Desc - Manages the troops attacking each other                             
+// If a troop has less than or equal to 0 health, removes "dead" troop from vector                                                                          
+// FYI: remove element at front of a vector is m_computer.erase(m_computer.begin());        
+void Game::Attack(){
+
+  //checks if it's the player's turn and calls attack
+  if (m_curPlayer == 0){
+    m_player[0].AttackTroop(m_computer[0]);
+    
+    //makes the counter attack of the computer
+    if(m_computer[0].GetHealth() > 0){
+      m_computer[0].AttackTroop(m_player[0]);
+    }
+    m_curPlayer = 1;
+  }
+
+  //checks if it's the computer's turn and calls attack
+  else if(m_curPlayer == 1){
+    m_computer[0].AttackTroop(m_player[0]);
+    //makes the counter attack of the player
+    if(m_player[0].GetHealth() > 0){
+      m_player[0].AttackTroop(m_computer[0]);
+    }
+    m_curPlayer = 0;
+  }
+
+  //checks if the player troop's health is <= 0 and erases it from the
+  //vector m_player if it is
+  if(m_player[0].GetHealth() <= 0){
+    cout << m_player[0].GetName() << " dies " << endl;
+    m_player.erase(m_player.begin());
+  }
+   //checks if the computer troop's health is <= 0 and erases it from the
+  //vector m_computer if it is
+  if(m_computer[0].GetHealth() <= 0){
+    cout << m_computer[0].GetName() << " dies " << endl;
+    m_computer.erase(m_computer.begin());
+  }
+}
